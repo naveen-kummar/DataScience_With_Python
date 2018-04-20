@@ -1,0 +1,47 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Apr  6 17:28:03 2018
+
+@author: nkumar
+"""
+
+
+#importing the dataset
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#importing dataset
+dataset = pd.read_csv('Data.csv')
+X= dataset.iloc[:,:-1].values
+y= dataset.iloc[:,3].values
+
+#Taking care of missing data
+from sklearn.preprocessing import Imputer
+imputer =Imputer(missing_values = 'NaN', strategy = 'median', axis = 0)
+#most_frequent = in case all have uniquie value then least value is taken
+imputer = imputer.fit(X[:, 1:3])
+X[:,1:3] = imputer.transform(X[:,1:3])
+
+#Encoding Categorical Data
+from sklearn.preprocessing import LabelEncoder
+labelencoder_X = LabelEncoder()
+X[:, 0] = labelencoder_X.fit_transform(X[:,0])
+
+#Now we have problem with above encoding techique - It is
+#The first column number represent each country and now we are in 
+#danger ranking one country greater than other without any reason.
+#To overcome this we need to use hotencoder as below.
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelencoder_X = LabelEncoder()
+X[:, 0] = labelencoder_X.fit_transform(X[:,0])
+onehotencoder = OneHotEncoder(categorical_features = [0])
+X = onehotencoder.fit_transform(X).toarray()
+#For dependent variable we have to use labelencoder only
+labelencoder_y = LabelEncoder()
+y = labelencoder_y.fit_transform(y)
+
+#splitting dataset into training and test set
+from sklearn.cross_validation import train_test_split
+#need to pass independent and dependent variables along test data size
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 0)
