@@ -44,4 +44,24 @@ y = labelencoder_y.fit_transform(y)
 #splitting dataset into training and test set
 from sklearn.cross_validation import train_test_split
 #need to pass independent and dependent variables along test data size
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 0)
+#random_state determines how the sampling is done
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 2)
+
+
+
+#Feature Scalling
+#Why it is needed?
+#Mostly machine learning is based on Eculudian concept that is when we two set of data  say age and salary.
+#Age will range from 23 to 58 but salary will vary from 4k to 400K so salary range dominates the age range.
+#To overcome this we will use matematics tool "Standardization" and "Normalization" and that is called feature scalling.
+#If you do not do the feature scalling then your algorithims will run for very long time.
+#Let's see how we go about and do that.
+from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+#It is important that training set is always fit and tranform but test set can be just transformed.
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+#Do we need to do feature scalling for Y?
+#Well depends on the scenario
+#In this scenario we do not need to do that. As Y represents category having small range.
+# In case Y the dependent variable have large range then we need to do the featuire scalling for Y too.
