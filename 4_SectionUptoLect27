@@ -1,0 +1,58 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Thu May 17 12:37:25 2018
+
+@author: nkumar
+"""
+
+#Simple Linear Regression
+
+#importing the dataset
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+
+#importing dataset
+dataset = pd.read_csv('Salary_Data.csv')
+X= dataset.iloc[:,:-1].values
+y= dataset.iloc[:,1].values
+
+from sklearn.cross_validation import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, y, test_size = 1/3, random_state= 0)
+
+#Feature scalling can be skipped here as python libraries will take care of feature scalling internally.
+#But there are some scenario's where we need to do explicitly which we will see later
+#So for this linear regression we can skip it as Pyhton libiraries will take care of it.
+
+#So our next step is to mesaure the performance of linear regrtession's prediction by comparing predicted salary 
+# against the orginal data i.e. y_test against y (I beleive so)
+
+#Fitting Simple Linear Regression to the training set
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, Y_train) #Here we are feeding training set Age (X) and Salary(Y)
+#Now our regressor object has learned the correlation between age (X) and Salary(Y)
+
+#Let's new predict the test set results
+y_pred= regressor.predict(X_test)
+#Visuliazing the Training Set results
+plt.scatter(X_train, Y_train, color = 'red')#Orginal and actual data is plotted as dots
+plt.plot(X_train, regressor.predict(X_train), color = 'blue') #An linear line drawn where prdeicted result in Y axis and actual age in X axis
+#Now we need to provide the label details
+plt.title('Salary vs Experience (Training Set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+#Now executing the all the lines starting with "plt." will give you idea how close our prediction line against the orginal data in dots.
+
+
+#Now letsdra graph against predicted values by using the Linear line (Blue line)
+#Visuliazing the Test Set results
+plt.scatter(X_test, Y_test, color = 'red')#Orginal and actual data is plotted as dots from Test data
+plt.plot(X_train, regressor.predict(X_train), color = 'blue') #Same linear line used for trainig set is used
+plt.title('Salary vs Experience (Test Set)')
+plt.xlabel('Years of Experience')
+plt.ylabel('Salary')
+plt.show()
+#Now executing the all the lines starting with "plt." will give you idea how close our prediction line against the orginal test data in dots.
