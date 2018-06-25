@@ -1,0 +1,87 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jun 22 16:15:20 2018
+
+@author: nkumar
+"""
+
+
+#importing the dataset
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#importing dataset
+dataset = pd.read_csv('50_Startups.csv')
+X= dataset.iloc[:,:-1].values
+y= dataset.iloc[:,4].values
+
+
+
+
+#Now we have problem with above encoding techique - It is
+#The first column number represent each country and now we are in 
+#danger ranking one country greater than other without any reason.
+#To overcome this we need to use hotencoder as below.
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+labelencoder_X = LabelEncoder()
+X[:, 3] = labelencoder_X.fit_transform(X[:,3])
+onehotencoder = OneHotEncoder(categorical_features = [3])
+X = onehotencoder.fit_transform(X).toarray()
+
+#Avoiding dummy variable Trap - Here we will remove the column representing california.
+#Because removing that column will not impact our predication as it is just redudant data
+#We can get same result using Nowyork and Florida as data of california have coorelation with 
+# data of New York and Florida.
+X = X[:, 1:]
+
+#splitting dataset into training and test set
+from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 0)
+
+
+#Feature Scallingfrom sklearn.preprocessing import StandardScaler
+"""sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)"""
+
+#Fitting Multiple Linear Regression to the training set
+from sklearn.linear_model import LinearRegression
+regressor = LinearRegression()
+regressor.fit(X_train, y_train)
+
+#Predicting the Y_test using X_Test
+y_pred = regressor.predict(X_test)
+
+#Building optimal model using backward elimination 
+#First step is to insert column of 1's so that we have equation os b0x0 + b1x1 + b2x2 +..
+import statsmodels.formula.api as sm
+X = np.append(arr = np.ones((50, 1)).astype(int), values = X, axis = 1)
+X_opt = X[:, [0, 1, 2, 3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+
+# 2nd col has p-value > .990 - Lets remove it.
+X_opt = X[:, [0, 1,  3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+
+# 3rd col p-value > .940 - Lets remove it.
+X_opt = X[:, [0, 3, 4, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+# 5th Col has p-value > .940 - Lets remove it.
+X_opt = X[:, [0, 3, 5]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+
+# 6th col has p val 0.06 we can remove that too.
+X_opt = X[:, [0, 3]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
+#Finally it is evident that R and D spend has the direct impact on the out-come.
