@@ -1,0 +1,82 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jun 26 12:59:57 2018
+
+@author: nkumar
+"""
+
+#importing the dataset
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#importing dataset
+dataset = pd.read_csv('Position_Salaries.csv')
+#X= dataset.iloc[:,1].values - This will make X as array but 
+#we want it as matrix so we will just specify lower and upper 
+#bound as upper bound will not be included
+X= dataset.iloc[:, 1:2].values
+y= dataset.iloc[:,2].values
+
+
+#splitting dataset into training and test set
+'''from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 2)'''
+#We are not going split into Training and Test data as we have small amount of data and we want to use 
+#complete data for accurate prediction.
+
+#Fitting Linear Regression to the dataset
+from sklearn.linear_model import LinearRegression
+lin_reg = LinearRegression()
+lin_reg.fit(X, y)
+
+
+#Fitting Polynomial Regression to the dataset
+from sklearn.preprocessing import PolynomialFeatures
+poly_reg = PolynomialFeatures(degree = 4)
+X_poly = poly_reg.fit_transform(X)
+poly_reg.fit(X_poly, y)
+lin_reg_2 = LinearRegression()
+lin_reg_2.fit(X_poly, y)
+
+#Visulizing linear regression results
+plt.scatter(X, y, color = 'red')
+plt.plot(X, lin_reg.predict(X), color = 'blue')
+plt.title('Truth or Bluff (Linear Regression)')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.show()
+
+#Visulizing the Polynomial regression
+X_grid = np.arange(min(X), max(X), 0.1)
+X_grid = X_grid.reshape((len(X_grid), 1))
+plt.scatter(X, y, color = 'red')
+plt.plot(X_grid, lin_reg_2.predict(poly_reg.fit_transform(X_grid)), color = 'blue')
+plt.title('Truth or Bluff (Polynomial Regression)')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.show()
+
+#Predicting a new result with Linear regression
+lin_reg.predict(6.5)
+
+
+#Predicting a new result with Polynomial regression
+lin_reg_2.predict(poly_reg.fit_transform(6.5))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
