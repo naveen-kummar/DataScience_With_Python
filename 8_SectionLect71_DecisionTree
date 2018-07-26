@@ -1,0 +1,69 @@
+#Decesion Tree Regression
+
+#importing the dataset
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+#importing dataset
+dataset = pd.read_csv('Position_Salaries.csv')
+#X= dataset.iloc[:,1].values - This will make X as array but 
+#we want it as matrix so we will just specify lower and upper 
+#bound as upper bound will not be included
+X= dataset.iloc[:, 1:2].values
+y= dataset.iloc[:,2:3].values
+
+
+#splitting dataset into training and test set
+'''from sklearn.cross_validation import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state= 2)'''
+#We are not going split into Training and Test data as we have small amount of data and we want to use 
+#complete data for accurate prediction.
+
+#Also we may not need Feature Scalling for most of the data set
+'''from sklearn.preprocessing import StandardScaler
+sc_X = StandardScaler()
+X_train = sc_X.fit_transform(X_train)
+X_test = sc_X.transform(X_test)
+sc_y = StandardScaler()
+y_train = sc_y.fit_transform(y_train)'''
+
+
+#Fitting Regression Model to the dataset
+from sklearn.tree import DecisionTreeRegressor
+regressor = DecisionTreeRegressor(random_state = 0)
+regressor.fit(X,y)
+
+#Predicting a new result with Polynomial regression
+y_pred = regressor.predict(6.5)
+
+
+
+#Visulizing the Decision Tree Regression regression Results
+#For non-continuous regresssion models like decesion tree use only high resoulution plotting
+#Because using below one will try to plot a continuous by taking wrong interval in X-axis.
+'''plt.scatter(X, y, color = 'red')
+plt.plot(X, regressor.predict(X), color = 'blue')
+plt.title('Truth or Bluff (Decision Tree Regression)')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.show()'''
+
+#Visulizing the Decision Tree Regression Results (for higher resolution and smoother curve)
+'''Here we increased resolution from 0.1 to 0.01 - Now you will get more steps as the avg is exactly represented for each interval'''
+X_grid = np.arange(min(X), max(X), 0.01) 
+X_grid = X_grid.reshape((len(X_grid), 1))
+plt.scatter(X, y, color = 'red')
+plt.plot(X_grid, regressor.predict((X_grid)), color = 'blue')
+plt.title('Truth or Bluff (Decision Tree Regression)')
+plt.xlabel('Position Level')
+plt.ylabel('Salary')
+plt.show()
+
+
+'''But still our predicted salary will be 155K as Deceision tree 
+works best for multi-dimension not for these kind of 1D'''
+
+'''Next section we will see random forest which is combination of 
+multiple decision trees- Wil that give correct resilyt of 160K for predicted salary
+and we still get the vertical lines.'''
